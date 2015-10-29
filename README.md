@@ -9,7 +9,7 @@ A simple Joomla plugin that automatically generates description meta tags by pul
 * [Joomla 1.6](https://github.com/nocean/SEOSimple/releases/tag/J1.6)
 * [Joomla 1.7](https://github.com/nocean/SEOSimple/releases/tag/J1.7)
 * [Joomla 2.5](https://github.com/nocean/SEOSimple/releases/tag/J2.5)
-* [Joomla 3](https://github.com/nocean/SEOSimple/releases/tag/J3)
+* [Joomla 3.0](https://github.com/nocean/SEOSimple/releases/tag/J3.0)
 
 ### Details
 * [Usage Instructions](http://www.nocean.ca/plugins/seosimple-joomla-plugin/)

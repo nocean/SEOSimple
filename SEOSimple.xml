@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension version="2.5" type="plugin" group="system" method="upgrade">
+<extension version="3.0" type="plugin" group="system" method="upgrade">
     <name>System - SEOSimple</name>
     <author>Dao By Design</author>
     <creationDate>April 2014</creationDate>
@@ -8,7 +8,7 @@
     <authorEmail>info@daobydesign.com</authorEmail>
     <authorUrl>www.daobydesign.com</authorUrl>
     <version>2.2</version>
-    <description>This native Joomla 2.5 plugin automatically generates description meta tags by pulling text from the content to help with SEO. It also gives you the ability to set different title configurations. You are using Version 2.2 of the plugin.</description>
+    <description>This Joomla 3.0 plugin automatically generates description meta tags by pulling text from the content to help with SEO. It also gives you the ability to set different title configurations. You are using Version 2.2 of the plugin.</description>
     <files>
         <filename plugin="SEOSimple">SEOSimple.php</filename>
 		<filename>index.html</filename>
