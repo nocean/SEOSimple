@@ -2,14 +2,15 @@
 /**
 * @author Ryan McLaughlin (www.daobydesign.com, info@daobydesign.com)
 * This plugin will automatically generate Meta Description tags from your content.
-* version 2.0
+* version 2.1
 */
 
 // no direct access
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 // Import library dependencies
-jimport('joomla.event.plugin');
+jimport('joomla.plugin.plugin');
+jimport('joomla.html.parameter');
 
 class plgSystemSEOSimple extends JPlugin {
   
@@ -19,31 +20,28 @@ class plgSystemSEOSimple extends JPlugin {
     }
 
     function onAfterDispatch() {
-		global $mainframe, $thebuffer;
+		//global $mainframe, $thebuffer;
+		$app = &JFactory::getApplication();
 		$document =& JFactory::getDocument();
-        $docType = $document->getType();
-
+		$docType = $document->getType();
+ 
     	// only mod site pages that are html docs (no admin, install, etc.)
-      	if (!$mainframe->isSite()) return ;
+      	if (!$app->isSite()) return ;
     	if ($docType != 'html') return ;
 		
-		// load plugin parameters
-		$plugin =& JPluginHelper::getPlugin('system', 'SEOSimple');
-		$pluginParams = new JParameter( $plugin->params );
-
 		// Check to see if this is the front page and if this feature is disabled
-		$fptitorder = $pluginParams->def('fptitorder', 0);
+		$fptitorder = $this->params->def('fptitorder', 0);
 		if ($this->isFrontPage() && $fptitorder == 0) return;
 
 		// Check to see if this is not the front page and if this feature is disabled
-		$titOrder = $pluginParams->def('titorder', 0);
+		$titOrder = $this->params->def('titorder', 0);
 		if (!$this->isFrontPage() && $titOrder == 0) return;
 
 		// Alright, we're all good -- time to start changin' stuff.
-		$customtitle = html_entity_decode($pluginParams->def('customtitle','Home'));
+		$customtitle = html_entity_decode($this->params->def('customtitle','Home'));
 		$pageTitle = html_entity_decode($document->getTitle());
-		$sitename = html_entity_decode($mainframe->getCfg('sitename'));
-		$sep = str_replace('\\','',$pluginParams->def('separator','|')); //Sets and removes Joomla escape char bug.
+		$sitename = html_entity_decode($app->getCfg('sitename'));
+		$sep = $this->params->def('separator','|');
 		
 		if ($this->isFrontPage()):
 			if ($fptitorder == 1):
@@ -78,31 +76,39 @@ class plgSystemSEOSimple extends JPlugin {
 
 	}
 
-	function onPrepareContent(&$article, &$params, $limitstart) {
-		global $mainframe;
-		if (!$mainframe->isSite()) return;
+	function onContentPrepare($context, &$article, &$params, $limitstart) {
+		$app = &JFactory::getApplication();
+		
+		if (!$app->isSite()) return;
 		
 		$document =& JFactory::getDocument();
 		$view = JRequest::getVar('view');
-		$plugin =& JPluginHelper::getPlugin('system', 'SEOSimple');
-		$pluginParams = new JParameter( $plugin->params );
-		$thelength = $pluginParams->def('length', 155);
+		$thelength = $this->params->def('length', 155);
 		$thecontent = $article->text;
-		$fpdesc = $pluginParams->def('fpdesc', 0);
-		$credit = $pluginParams->def('credittag', 0);
-		$catnoindex = $pluginParams->def('catnoindex', 0);
+		$fpdesc = $this->params->def('fpdesc', 0);
+		$catdesc = $this->params->def('catdesc', 0);
+		$credit = $this->params->def('credittag', 0);
+		$catnoindex = $this->params->def('catnoindex', 0);
 
 		//Checks to see whether FP should use standard desc or auto-generated one.
 		if ($this->isFrontPage() && $fpdesc == 0) {
-			$document->setDescription($mainframe->getCfg('MetaDesc'));
+			$document->setDescription($app->getCfg('MetaDesc'));
 			return;
 		}
 		
 		//Bit of code to grab only the first content item in category list.
 		if ($document->getDescription() != '') {
-			if ($document->getDescription() != $mainframe->getCfg('MetaDesc')) return;
+			if ($document->getDescription() != $app->getCfg('MetaDesc')) return;
 		}
-		
+
+		if ($view == 'category' && $catdesc == 0) { 
+			$db1 = &JFactory::getDBO();
+			$catid = JRequest::getVar('id');
+			$db1->setQuery('SELECT cat.description FROM #__categories cat WHERE cat.id='.$catid);   
+      		$catdesc = $db1->loadResult();
+			if ($catdesc) { $thecontent = $catdesc; }
+		}
+				
 		// Clean things up and prepare auto-generated Meta Description tag.
 		$thecontent = $this->cleanText($thecontent);
 
@@ -110,7 +116,7 @@ class plgSystemSEOSimple extends JPlugin {
 		// Truncate the string to the length parameter - rounding to nearest word
 		$thecontent = $thecontent . ' ';
 		$thecontent = substr($thecontent,0,$thelength);
-		$thecontent = substr($thecontent,0,strrpos($thecontent,' '));
+		$thecontent = rtrim(substr($thecontent,0,strrpos($thecontent,' ')), ' ');
 
 		// Set the description
 		$document->setDescription($thecontent);
@@ -128,27 +134,20 @@ class plgSystemSEOSimple extends JPlugin {
 
 	
 	/* cleanText function - Thx owed to eXtplorer, joomSEO, Jean-Marie Simonet and Ivan Tomic */
-	function cleanText( $text ) {
+	function cleanText ($text) {
 		$text = preg_replace( "'<script[^>]*>.*?</script>'si", '', $text );
 		$text = preg_replace( '/<!--.+?-->/', '', $text );
 		$text = preg_replace( '/{.+?}/', '', $text );
 
 		// convert html entities to chars (with conditional for PHP4 users
-		if (version_compare(phpversion(), '5.0') < 0 ) {
-			require_once(JPATH_SITE.DS.'libraries'.DS.'tcpdf'.DS.'html_entity_decode_php4.php');
-			$text = html_entity_decode_php4($text,ENT_QUOTES,'UTF-8');
-		} else {
-			$text = html_entity_decode($text,ENT_QUOTES,'UTF-8');
-		}
+		$text = html_entity_decode($text,ENT_QUOTES,'UTF-8');
 
 		$text = strip_tags( $text ); // Last check to kill tags
 		$text = str_replace('"', '\'', $text); //Make sure all quotes play nice with meta.
         $text = str_replace(array("\r\n", "\r", "\n", "\t"), " ", $text); //Change spaces to spaces
 
         // remove any extra spaces
-		while (strchr($text,"  ")) {
-			$text = str_replace("  ", " ",$text);
-		}
+		$text = str_replace('  ', ' ',$text);
 		
 		// general sentence tidyup
 		for ($cnt = 1; $cnt < strlen($text); $cnt++) {
