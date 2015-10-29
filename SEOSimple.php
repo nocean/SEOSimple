@@ -1,8 +1,8 @@
 <?php
 /**
 * @author Ryan McLaughlin (www.daobydesign.com, info@daobydesign.com)
-* This plugin will automatically generate Meta Description tags from your content.
-* version 2.1
+* This plugin will automatically generate Meta Description tags from your content, as well as provide options for title and noindex manipulation.
+* version 2.2
 */
 
 // no direct access
@@ -163,10 +163,12 @@ class plgSystemSEOSimple extends JPlugin {
 		return $text;
 	}	
 
-	
+	// Updated in 2.2 for improved multi-lingual functionality. Thx Jakub Niezgoda
 	function isFrontPage() {
-		$menu = & JSite::getMenu();
-		if ($menu->getActive() == $menu->getDefault()) {
+		$app = JFactory::getApplication();
+		$menu = $app->getMenu();
+		$lang = JFactory::getLanguage();
+		if ($menu->getActive() == $menu->getDefault($lang->getTag())) {
 			return true;
 		}
 		return false;

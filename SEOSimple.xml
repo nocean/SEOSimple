@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension version="1.7" type="plugin" group="system" method="upgrade">
+<extension version="2.5" type="plugin" group="system" method="upgrade">
     <name>System - SEOSimple</name>
     <author>Dao By Design</author>
-    <creationDate>January 2012</creationDate>
-    <copyright>Copyright (C) 2012 Dao By Design</copyright>
+    <creationDate>April 2014</creationDate>
+    <copyright>Copyright (C) 2014 Dao By Design</copyright>
     <license>GNU/GPL</license>
     <authorEmail>info@daobydesign.com</authorEmail>
     <authorUrl>www.daobydesign.com</authorUrl>
-    <version>2.1</version>
-    <description>This native Joomla 1.7 plugin automatically generates description meta tags by pulling text from the content to help with SEO. It also gives you the ability to set different title configurations. You are using Version 2.1 of the plugin.</description>
+    <version>2.2</version>
+    <description>This native Joomla 2.5 plugin automatically generates description meta tags by pulling text from the content to help with SEO. It also gives you the ability to set different title configurations. You are using Version 2.2 of the plugin.</description>
     <files>
         <filename plugin="SEOSimple">SEOSimple.php</filename>
 		<filename>index.html</filename>
