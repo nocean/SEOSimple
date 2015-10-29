@@ -95,7 +95,7 @@ class plgSystemSEOSimple extends JPlugin {
 			$document->setDescription($app->getCfg('MetaDesc'));
 			return;
 		}
-		
+
 		//Bit of code to grab only the first content item in category list.
 		if ($document->getDescription() != '') {
 			if ($document->getDescription() != $app->getCfg('MetaDesc')) return;
@@ -123,7 +123,7 @@ class plgSystemSEOSimple extends JPlugin {
 
 		// Set robots for category pages (beta)
 		if ($view == 'category' && $catnoindex == 1) { $document->setMetaData('robots','noindex,follow'); }
-
+	
 		//Set optional Generator tag for SEOSimple credit.
 		if ($credit == 0) {
 			$regen = $document->getMetaData('generator');
