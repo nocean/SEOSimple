@@ -15,14 +15,14 @@ jimport('joomla.html.parameter');
 class plgSystemSEOSimple extends JPlugin {
   
 	// Constructor
-    function plgSystemSEOSimple(&$subject, $params) {
+    public function __construct(&$subject, $params) {
 		parent::__construct( $subject, $params );
     }
 
-    function onAfterDispatch() {
+    public function onAfterDispatch() {
 		//global $mainframe, $thebuffer;
-		$app = &JFactory::getApplication();
-		$document =& JFactory::getDocument();
+		$app = JFactory::getApplication();
+		$document = JFactory::getDocument();
 		$docType = $document->getType();
  
     	// only mod site pages that are html docs (no admin, install, etc.)
@@ -76,12 +76,12 @@ class plgSystemSEOSimple extends JPlugin {
 
 	}
 
-	function onContentPrepare($context, &$article, &$params, $limitstart) {
-		$app = &JFactory::getApplication();
+	public function onContentPrepare($context, &$article, &$params, $limitstart) {
+		$app = JFactory::getApplication();
 		
 		if (!$app->isSite()) return;
 		
-		$document =& JFactory::getDocument();
+		$document = JFactory::getDocument();
 		$view = JRequest::getVar('view');
 		$thelength = $this->params->def('length', 155);
 		$thecontent = $article->text;
@@ -102,7 +102,7 @@ class plgSystemSEOSimple extends JPlugin {
 		}
 
 		if ($view == 'category' && $catdesc == 0) { 
-			$db1 = &JFactory::getDBO();
+			$db1 = JFactory::getDBO();
 			$catid = JRequest::getVar('id');
 			$db1->setQuery('SELECT cat.description FROM #__categories cat WHERE cat.id='.$catid);   
       		$catdesc = $db1->loadResult();
@@ -134,7 +134,7 @@ class plgSystemSEOSimple extends JPlugin {
 
 	
 	/* cleanText function - Thx owed to eXtplorer, joomSEO, Jean-Marie Simonet and Ivan Tomic */
-	function cleanText ($text) {
+	public function cleanText ($text) {
 		$text = preg_replace( "'<script[^>]*>.*?</script>'si", '', $text );
 		$text = preg_replace( '/<!--.+?-->/', '', $text );
 		$text = preg_replace( '/{.+?}/', '', $text );
@@ -164,7 +164,7 @@ class plgSystemSEOSimple extends JPlugin {
 	}	
 
 	// Updated in 2.2 for improved multi-lingual functionality. Thx Jakub Niezgoda
-	function isFrontPage() {
+	public function isFrontPage() {
 		$app = JFactory::getApplication();
 		$menu = $app->getMenu();
 		$lang = JFactory::getLanguage();
@@ -174,13 +174,11 @@ class plgSystemSEOSimple extends JPlugin {
 		return false;
 	}
 
-	function killTitleinBuffer ($buff, $tit) {
+	public function killTitleinBuffer ($buff, $tit) {
 		$cleanTitle = $buff;
 		if (substr($buff, 0, strlen($tit)) == $tit) {
 			$cleanTitle = substr($buff, strlen($tit) + 1);
 		} 
 		return $cleanTitle;
 	}
-	
-	
 }
